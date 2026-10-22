@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Divisores de Tensão e Corrente — Estudo Interativo</title>
+<style>
+:root {
+  --ca: #0072B2; --ca-txt: #005A8C;
+  --cb: #E69F00; --cb-txt: #8F5600;
+  --cr: #CC79A7; --cr-txt: #8A3A68;
+  --sky: #56B4E9; --yel: #F0E442;
+  --verm: #D55E00; --teal: #009E73;
+  --tinta: #1b1f2a; --tinta-2: #3d4454;
+  --fundo: #f6f4ee; --cartao: #ffffff;
+  --borda: #1b1f2a;
+  --ok-bg: #e3f1fb; --erro-bg: #fdeee2;
+  --raio: 16px;
+  --sombra: 0 3px 0 rgba(27,31,42,.15);
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+html { scroll-behavior: smooth; scroll-padding-top: 68px; }
+* { box-sizing: border-box; }
+body { margin:0; font-family:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif; font-size:1.0625rem; line-height:1.6; color:var(--tinta); background:var(--fundo); overflow-x:hidden; -webkit-font-smoothing:antialiased; }
+::selection { background-color:rgba(0,114,178,.2); color:#0072B2; }
+:focus-visible { outline:4px solid var(--tinta); outline-offset:3px; box-shadow:0 0 0 7px var(--yel); }
+.hdr { position:sticky; top:0; z-index:50; background:var(--ca); color:#fff; border-bottom:4px solid var(--cb); }
+.hdr-inner { display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; padding:.5rem .75rem; max-width:1060px; margin:0 auto; }
+.hdr h1 { font-size:1.2rem; margin:0; flex:1; display:flex; align-items:center; gap:.5rem; line-height:1.2; color:#fff; font-weight:700; }
+.hdr .tag { background:var(--yel); color:var(--tinta); font-weight:800; font-size:.72rem; padding:3px 9px; border-radius:999px; text-transform:uppercase; letter-spacing:.04em; white-space:nowrap; }
+.wrap { max-width:1060px; margin:0 auto; }
+main { padding:.75rem; }
+.cartao { background:var(--cartao); border:2px solid var(--borda); border-radius:var(--raio); padding:1rem; margin:0 0 1rem; box-shadow:var(--sombra); }
+.intro { border-left:10px solid var(--sky); }
+.formula { display:flex; align-items:center; justify-content:center; gap:.3em; flex-wrap:wrap; font-family:var(--mono); font-size:clamp(1.1rem,3.4vw,1.35rem); font-weight:800; padding:1rem; margin:.5rem 0; background:#fff; border:3px solid var(--borda); border-radius:14px; box-shadow:var(--sombra); color:var(--tinta); }
+.formula sub {display: inline-block; position: relative; vertical-align: baseline; font-size: 0.65em; line-height: 1; bottom: -0.3em; margin-left: -0.25em;}
+.frac { display:inline-flex; flex-direction:column; align-items:stretch; vertical-align:middle; font-weight:800; line-height:1.15; font-size:1em; margin:0 .2em; }
+.frac span { text-align:center; padding:0 .2em; }
+.frac span:first-child { border-bottom:.14em solid currentColor; padding-bottom:.08em; }
+.frac span + span { padding-top:.08em; }
+.num-sec { display:inline-grid; place-items:center; width:2.1rem; height:2.1rem; border-radius:50%; background:var(--yel); border:2px solid var(--borda); font-size:1.05rem; flex:none; font-weight:800; }
+.tip { display:flex; gap:.75rem; align-items:flex-start; padding:.75rem 1rem; border-radius:12px; font-size:.95rem; margin-top:1rem; }
+.tip .ico { flex:none; font-size:1.2rem; line-height:1.4; }
+.tip p { margin:0; }
+.tip.azul { background:var(--ok-bg); border:2px solid var(--ca); color:var(--ca-txt); }
+.tip.amarelo { background:#fff7d1; border:2px solid var(--cb-txt); color:#6b4a00; }
+.tip.verde { background:#e4f3ec; border:2px solid var(--teal); color:#06634a; }
+.exemplo { background:#f1f6fa; border:2px solid var(--sky); border-radius:12px; padding:.75rem 1rem; margin:.75rem 0; }
+.exemplo .head { font-weight:800; margin-bottom:.4rem; }
+.passos { list-style:none; margin:.5rem 0 0; padding:0; counter-reset:passo; }
+.passos li { position:relative; padding-left:2.2rem; margin-bottom:.5rem; color:var(--tinta-2); font-size:.96rem; }
+.passos li::before { counter-increment:passo; content:counter(passo); position:absolute; left:0; top:.12em; display:grid; place-items:center; width:1.6rem; height:1.6rem; border-radius:50%; background:var(--tinta); color:#fff; font-size:.82rem; font-weight:800; font-family:var(--mono); }
+.resultado-ex { margin-top:.75rem; padding:.6rem .9rem; border-radius:10px; background:var(--ok-bg); border:2px solid var(--ca); color:var(--ca-txt); font-weight:800; font-size:.98rem; }
+.btn-primary { min-height:48px; padding:.5rem 1.1rem; border-radius:12px; border:2px solid var(--borda); background:var(--ca); color:#fff; font:inherit; font-weight:700; cursor:pointer; box-shadow:var(--sombra); touch-action:manipulation; }
+.btn-primary:active { transform:translateY(2px); box-shadow:none; }
+.btn-sec { min-height:48px; padding:.5rem 1.1rem; border-radius:12px; border:2px solid var(--borda); background:#fff; color:var(--tinta); font:inherit; font-weight:700; cursor:pointer; box-shadow:var(--sombra); touch-action:manipulation; }
+.fb { display:flex; gap:.65rem; align-items:flex-start; padding:.7rem .9rem; border-radius:12px; border:3px solid var(--borda); }
+.fb-ok { background:var(--ok-bg); border-style:solid; }
+.fb-erro { background:var(--erro-bg); border-style:dashed; }
+.fb-icone { flex:none; display:grid; place-items:center; width:2rem; height:2rem; border-radius:50%; font-size:1.2rem; color:#fff; }
+.fb-ok .fb-icone { background:var(--ca); }
+.fb-erro .fb-icone { background:var(--verm); border-radius:5px; }
+.campo label { display:block; font-size:.72rem; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:var(--tinta-2); margin-bottom:.35rem; }
+.campo input { width:100%; font:inherit; min-height:48px; padding:.6rem .7rem; border-radius:10px; border:2px solid var(--borda); background:#fff; color:var(--tinta); font-family:var(--mono); font-size:1.05rem; }
+.campo input:focus { outline:4px solid var(--tinta); outline-offset:2px; }
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; }
+.grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:.75rem; }
+.opc-btn { display:flex; align-items:center; gap:.8rem; width:100%; text-align:left; font:inherit; font-size:1rem; cursor:pointer; padding:.6rem .8rem; min-height:52px; border:2px solid var(--borda); background:#fff; color:var(--tinta); border-radius:12px; box-shadow:var(--sombra); }
+.opc-btn:disabled { cursor:default; }
+.opc-letra { flex:none; display:grid; place-items:center; width:2rem; height:2rem; border-radius:50%; background:var(--yel); border:2px solid var(--borda); font-family:var(--mono); font-size:.82rem; font-weight:800; color:var(--tinta); }
+.opc-txt { font-family:var(--mono); font-weight:700; font-size:.98rem; }
+footer { text-align:center; color:var(--tinta-2); font-size:.9rem; padding:1rem 0 2rem; border-top:2px solid var(--borda); max-width:1060px; margin:0 auto; }
+footer p { margin:.2rem 0; }
+@keyframes surgir { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+@media(min-width:640px){.cartao{padding:1.5rem}}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-inner">
+    <h1>⚡ Divisores de Tensão e Corrente</h1>
+    <span class="tag">Circuitos Série e Paralelo</span>
+  </div>
+</header>
+
+<div class="wrap"><main>
+
+<div class="cartao intro" style="animation:surgir .22s ease both">
+  <p style="margin:0;color:var(--tinta-2)">
+    Bem-vindo ao estudo interativo de <strong style="color:var(--ca-txt)">Divisores de Tensão</strong> e
+    <strong style="color:var(--cb-txt)">Divisores de Corrente</strong>.
+    Use as calculadoras, explore os diagramas e teste seus conhecimentos nos exercícios!
+  </p>
+</div>
+
+<!-- ===== SEÇÃO 1: DIVISOR DE TENSÃO ===== -->
+<section id="tensao" style="margin-bottom:1.5rem">
+  <h2 style="font-size:1.55rem;line-height:1.25;margin:0 0 .75rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+    <span class="num-sec">1</span> 📖 Divisor de Tensão
+  </h2>
+  <div class="cartao">
+    <p>Observe no circuito seguinte as tensões sobre os resistores.
+      Quando os resistores estão em <strong>série</strong>, a tensão se divide de forma
+      proporcional ao valor das resistências:
+      <strong style="color:var(--ca-txt)">o que tiver maior resistência vai ter maior tensão</strong>.</p>
+    <div class="tip azul">
+      <span class="ico">💡</span>
+      <div><strong>Conceito-chave</strong>
+        <p>Em um circuito série, a <strong>corrente é a mesma</strong> em todos os componentes.
+          Se I é igual e lembrando que V = R × I, então quanto maior o R, maior a queda de tensão!</p>
+      </div>
+    </div>
+
+    <!-- Diagrama série -->
+    <div style="margin:1rem 0;padding:1rem;background:#fff;border:2px solid var(--borda);border-radius:14px;box-shadow:var(--sombra)">
+      <p style="font-size:.72rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--tinta-2);margin-bottom:.6rem">
+        Diagrama de um Circuito Série</p>
+      <svg id="svg-serie" viewBox="-55 0 545 240" style="width:100%;max-width:560px;display:block;margin:0 auto"></svg>
+      <div class="grid-2" style="margin-top:1rem" id="tensao-bars"></div>
+      <div class="tip amarelo" style="margin-top:.75rem">
+        <span class="ico">👀</span>
+        <div><p>Observe: o tamanho do texto e da barra é <strong>proporcional à tensão.</strong> Mude os valores na calculadora abaixo e veja como o resistor maior sempre tem a maior tensão!</p></div>
+      </div>
+    </div>
+
+    <!-- Calculadora tensão -->
+    <h3 style="font-size:1.2rem;margin:1rem 0 .5rem;display:flex;align-items:center;gap:.5rem">🖩 Calculadora Interativa</h3>
+    <div class="cartao">
+      <div class="grid-3" style="margin-bottom:1rem">
+        <div class="campo"><label for="vt-v">Tensão da fonte (V)</label><input id="vt-v" type="number" step="any" value="10" placeholder="10"></div>
+        <div class="campo"><label for="vt-r1">R1 (kΩ)</label><input id="vt-r1" type="number" step="any" min="0" value="4" placeholder="4"></div>
+        <div class="campo"><label for="vt-r2">R2 (kΩ)</label><input id="vt-r2" type="number" step="any" min="0" value="16" placeholder="16"></div>
+      </div>
+      <div class="grid-2" id="tensao-results"></div>
+      <div style="margin-top:.75rem"><button class="btn-primary" style="font-size:.92rem" id="btn-steps-tensao">Ver Passo a Passo</button></div>
+      <div id="steps-tensao" style="display:none"></div>
+    </div>
+
+    <!-- Fórmula -->
+    <h3 style="font-size:1.2rem;margin:1.25rem 0 .5rem">Dedução da Fórmula (Lei de Ohm)</h3>
+    <p>Para obter a tensão sobre um resistor em particular, usamos a fórmula do <strong>divisor de tensão</strong>.</p>
+    <p style="color:var(--tinta-2);font-size:.95rem">Tensão sobre R1: V<sub>R1</sub> = R1 · I = R1 · V / R<sub>EQ</sub> = R1 · V / (R1 + R2)</p>
+    <div class="grid-2" style="margin:.75rem 0">
+      <div class="formula">V<sub>R1</sub> = <span class="frac"><span>R1</span><span>R1 + R2</span></span> · V</div>
+      <div class="formula">V<sub>R2</sub> = <span class="frac"><span>R2</span><span>R1 + R2</span></span> · V</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SEÇÃO 2: DIVISOR DE CORRENTE ===== -->
+<section id="corrente" style="margin-bottom:1.5rem">
+  <h2 style="font-size:1.55rem;line-height:1.25;margin:0 0 .75rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+    <span class="num-sec">2</span> 📖 Divisor de Corrente
+  </h2>
+  <div class="cartao">
+    <p>Quando dois resistores estão em <strong>paralelo</strong>, eles apresentam a mesma tensão,
+      mas a <strong>corrente se divide</strong> entre os ramos.
+      A corrente é inversamente proporcional à resistência:
+      <strong style="color:var(--cb-txt)">o ramo com menor resistência recebe mais corrente</strong>.</p>
+    <div class="tip verde">
+      <span class="ico">🔑</span>
+      <div><strong>Conceito-chave</strong>
+        <p>Em um circuito paralelo, a <strong>tensão é a mesma</strong> em todos os ramos.
+          Se V é igual e lembrando que I = V / R, então quanto menor o R, maior a corrente naquele ramo!</p>
+      </div>
+    </div>
+
+    <!-- Diagrama paralelo -->
+    <div style="margin:1rem 0;padding:1rem;background:#fff;border:2px solid var(--borda);border-radius:14px;box-shadow:var(--sombra)">
+      <p style="font-size:.72rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--tinta-2);margin-bottom:.6rem">
+        Diagrama de um Circuito Paralelo</p>
+      <svg id="svg-paralelo" viewBox="0 0 460 230" style="width:100%;max-width:500px;display:block;margin:0 auto"></svg>
+      <div class="grid-2" style="margin-top:1rem" id="corrente-bars"></div>
+      <div class="tip amarelo" style="margin-top:.75rem">
+        <span class="ico">👀</span>
+        <div><p>Observe: o <strong>menor resistor</strong> recebe a <strong>maior corrente!</strong> Isso é o oposto do divisor de tensão.</p></div>
+      </div>
+    </div>
+
+    <!-- Calculadora corrente -->
+    <h3 style="font-size:1.2rem;margin:1rem 0 .5rem;display:flex;align-items:center;gap:.5rem">🖩 Calculadora Interativa</h3>
+    <div class="cartao">
+      <div class="grid-3" style="margin-bottom:1rem">
+        <div class="campo"><label for="dc-it">Corrente total I<sub>T</sub> (mA)</label><input id="dc-it" type="number" step="any" value="9" placeholder="9"></div>
+        <div class="campo"><label for="dc-r1">R1 (kΩ)</label><input id="dc-r1" type="number" step="any" min="0" value="6" placeholder="6"></div>
+        <div class="campo"><label for="dc-r2">R2 (kΩ)</label><input id="dc-r2" type="number" step="any" min="0" value="3" placeholder="3"></div>
+      </div>
+      <div class="grid-2" id="corrente-results"></div>
+      <div style="margin-top:.75rem"><button class="btn-primary" style="font-size:.92rem" id="btn-steps-corrente">Ver Passo a Passo</button></div>
+      <div id="steps-corrente" style="display:none"></div>
+    </div>
+
+    <!-- Fórmula -->
+    <h3 style="font-size:1.2rem;margin:1.25rem 0 .5rem">Fórmula do Divisor de Corrente</h3>
+    <p style="color:var(--tinta-2);font-size:.95rem">Para dois resistores em paralelo, a corrente em cada ramo é:</p>
+    <div class="grid-2" style="margin:.75rem 0">
+      <div class="formula">I<sub>1</sub> = <span class="frac"><span>R2</span><span>R1 + R2</span></span> · I<sub>T</sub></div>
+      <div class="formula">I<sub>2</sub> = <span class="frac"><span>R1</span><span>R1 + R2</span></span> · I<sub>T</sub></div>
+    </div>
+    <div class="tip amarelo">
+      <span class="ico">⚠️</span>
+      <div><p>Note que a fórmula é "cruzada": a corrente em R1 usa o valor de <strong>R2</strong> no numerador,
+        e vice-versa. Isso ocorre porque o ramo de <em>menor</em> resistência conduz <em>mais</em> corrente.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SEÇÃO 3: EXERCÍCIOS ===== -->
+<section id="exercicios" style="margin-bottom:1.5rem">
+  <h2 style="font-size:1.55rem;line-height:1.25;margin:0 0 .75rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+    <span class="num-sec">3</span> 📋 Exercícios
+  </h2>
+  <div id="ex-score" style="display:none"></div>
+  <div id="exercicios-container"></div>
+</section>
+
+</main></div>
+
+<footer>
+  <p>Divisores de Tensão e Corrente</p>
+  <p>Baseado nos materiais de aula de Eletricidade I</p>
+</footer>
+
+<script>
+/* ====== UTILITÁRIOS ====== */
+function fmtBR(val, dec) { if (dec === undefined) dec = 2; return val.toFixed(dec).replace('.', ','); }
+function fmtR(val) {
+  if (val >= 1) { var txt = val % 1 === 0 ? val.toFixed(0) : fmtBR(val, 1); return txt + ' kΩ'; }
+  return (val * 1000).toFixed(0) + ' Ω';
+}
+
+/* ====== DIVISOR DE TENSÃO ====== */
+function getTensaoValues() {
+  var v = parseFloat(document.getElementById('vt-v').value) || 0;
+  var r1 = Math.max(0, parseFloat(document.getElementById('vt-r1').value) || 0);
+  var r2 = Math.max(0, parseFloat(document.getElementById('vt-r2').value) || 0);
+  var rT = r1 + r2;
+  var vR1 = rT > 0 ? (r1 / rT) * v : 0;
+  var vR2 = rT > 0 ? (r2 / rT) * v : 0;
+  return { v:v, r1:r1, r2:r2, rT:rT, vR1:vR1, vR2:vR2 };
+}
+
+function renderSVGSerie() {
+  var d = getTensaoValues();
+  var absV = Math.abs(d.v) || 1;
+  var svg = document.getElementById('svg-serie');
+  svg.innerHTML =
+    '<line x1="70" y1="50" x2="70" y2="85" stroke="var(--tinta)" stroke-width="2.5"/>'
+    +'<line x1="70" y1="135" x2="70" y2="170" stroke="var(--tinta)" stroke-width="2.5"/>'
+    +'<line x1="70" y1="50" x2="160" y2="50" stroke="var(--tinta)" stroke-width="2.5"/>'
+    +'<line x1="270" y1="50" x2="370" y2="50" stroke="var(--tinta)" stroke-width="2.5"/>'
+    +'<line x1="370" y1="50" x2="370" y2="190" stroke="var(--tinta)" stroke-width="2.5"/>'
+    +'<line x1="70" y1="190" x2="160" y2="190" stroke="var(--tinta)" stroke-width="2.5"/>'
+    +'<line x1="270" y1="190" x2="370" y2="190" stroke="var(--tinta)" stroke-width="2.5"/>'
+    +'<line x1="70" y1="170" x2="70" y2="190" stroke="var(--tinta)" stroke-width="2.5"/>'
+    +'<circle cx="70" cy="127" r="43" fill="#fff" stroke="var(--tinta)" stroke-width="2.5"/>'
+    +'<text x="70" y="112" text-anchor="middle" font-size="18" font-weight="800" fill="var(--tinta)">+</text>'
+    +'<text x="70" y="152" text-anchor="middle" font-size="22" font-weight="800" fill="var(--tinta)">−</text>'
+    +'<text x="14" y="130" text-anchor="end" font-size="15" font-weight="800" fill="var(--ca-txt)">'+fmtBR(d.v,1)+' V</text>'
+    +'<rect x="160" y="35" width="110" height="30" rx="3" fill="none" stroke="var(--ca)" stroke-width="2.5"/>'
+    +'<text x="210" y="28" text-anchor="middle" font-size="15" font-weight="800" fill="var(--ca-txt)">+ V<tspan font-size="10" dy="3">R1</tspan><tspan font-size="15" dy="-3">&nbsp−</tspan></text>'
+    +'<text x="210" y="55" text-anchor="middle" font-size="13" font-weight="800" fill="var(--ca-txt)">R1 = '+fmtR(d.r1)+'</text>'
+    +'<rect x="160" y="175" width="110" height="30" rx="3" fill="none" stroke="var(--cb-txt)" stroke-width="2.5"/>'
+    +'<text x="210" y="195" text-anchor="middle" font-size="13" font-weight="800" fill="var(--cb-txt)">R2 = '+fmtR(d.r2)+'</text>'
+    +'<text x="210" y="168" text-anchor="middle" font-size="15" font-weight="800" fill="var(--cb-txt)">−  V<tspan font-size="10" dy="3">R2</tspan><tspan font-size="15" dy="-3">&nbsp+</tspan></text>'    
+    +'<defs><marker id="arrowI" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><path d="M0,0 L10,3.5 L0,7" fill="var(--teal)"/></marker></defs>'
+    +'<line x1="395" y1="65" x2="395" y2="170" stroke="var(--teal)" stroke-width="2.5" marker-end="url(#arrowI)"/>'
+    +'<text x="420" y="122" font-size="13" font-weight="800" fill="var(--teal)">I (mesma!)</text>';
+
+  var sizeR1 = 0.75 + (Math.abs(d.vR1)/absV)*1.25;
+  var sizeR2 = 0.75 + (Math.abs(d.vR2)/absV)*1.25;
+  var pctR1 = Math.min(100,(Math.abs(d.vR1)/absV)*100);
+  var pctR2 = Math.min(100,(Math.abs(d.vR2)/absV)*100);
+  document.getElementById('tensao-bars').innerHTML =
+    '<div style="border-radius:12px;padding:.75rem 1rem;background:#fff;border:3px solid var(--ca);text-align:center">'
+    +'<div style="font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-2);margin-bottom:.4rem">Tensão em R1</div>'
+    +'<div style="font-family:var(--mono);font-weight:800;font-size:'+sizeR1+'rem;color:var(--ca-txt);transition:font-size .3s">'+fmtBR(d.vR1)+' V</div>'
+    +'<div style="height:8px;border-radius:999px;background:#eae5da;margin-top:.5rem;overflow:hidden"><div style="height:100%;width:'+pctR1+'%;background:var(--ca);border-radius:999px;transition:width .3s"></div></div>'
+    +'</div>'
+    +'<div style="border-radius:12px;padding:.75rem 1rem;background:#fff;border:3px dashed var(--cb-txt);text-align:center">'
+    +'<div style="font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-2);margin-bottom:.4rem">Tensão em R2</div>'
+    +'<div style="font-family:var(--mono);font-weight:800;font-size:'+sizeR2+'rem;color:var(--cb-txt);transition:font-size .3s">'+fmtBR(d.vR2)+' V</div>'
+    +'<div style="height:8px;border-radius:999px;background:#eae5da;margin-top:.5rem;overflow:hidden"><div style="height:100%;width:'+pctR2+'%;background:var(--cb);border-radius:999px;transition:width .3s"></div></div>'
+    +'</div>';
+}
+
+function renderTensaoResults() {
+  var d = getTensaoValues();
+  document.getElementById('tensao-results').innerHTML =
+    '<div class="resultado-ex">V<sub>R1</sub> = '+fmtBR(d.vR1)+' V</div>'
+    +'<div class="resultado-ex" style="background:var(--erro-bg);border-color:var(--cb-txt);color:var(--cb-txt)">V<sub>R2</sub> = '+fmtBR(d.vR2)+' V</div>';
+}
+
+var stepsVisivelTensao = false;
+document.getElementById('btn-steps-tensao').addEventListener('click', function() {
+  stepsVisivelTensao = !stepsVisivelTensao;
+  var el = document.getElementById('steps-tensao');
+  el.style.display = stepsVisivelTensao ? 'block' : 'none';
+  this.textContent = stepsVisivelTensao ? 'Ocultar Passo a Passo' : 'Ver Passo a Passo';
+  if (stepsVisivelTensao) renderStepsTensao();
+});
+
+function renderStepsTensao() {
+  var d = getTensaoValues();
+  var corrente = d.rT > 0 ? d.v / d.rT : 0;
+  document.getElementById('steps-tensao').innerHTML =
+    '<div class="exemplo" style="margin-top:.75rem;animation:surgir .22s ease both">'
+    +'<div class="head">Passo a Passo do Cálculo</div>'
+    +'<ol class="passos">'
+    +'<li><strong>Resistência total (série):</strong> R<sub>T</sub> = R1 + R2 = '+fmtBR(d.r1)+' + '+fmtBR(d.r2)+' = <strong>'+fmtBR(d.rT)+' kΩ</strong></li>'
+    +'<li><strong>Corrente no circuito (Lei de Ohm):</strong> I = V / R<sub>T</sub> = '+fmtBR(d.v)+' / '+fmtBR(d.rT)+' = <strong>'+fmtBR(corrente,4)+' mA</strong></li>'
+    +'<li><strong>Tensão em R1:</strong> V<sub>R1</sub> = R1 / (R1 + R2) × V = '+fmtBR(d.r1)+' / '+fmtBR(d.rT)+' × '+fmtBR(d.v)+' = <strong style="color:var(--ca-txt)">'+fmtBR(d.vR1)+' V</strong></li>'
+    +'<li><strong>Tensão em R2:</strong> V<sub>R2</sub> = R2 / (R1 + R2) × V = '+fmtBR(d.r2)+' / '+fmtBR(d.rT)+' × '+fmtBR(d.v)+' = <strong style="color:var(--cb-txt)">'+fmtBR(d.vR2)+' V</strong></li>'
+    +'<li><strong>Verificação:</strong> V<sub>R1</sub> + V<sub>R2</sub> = '+fmtBR(d.vR1)+' + '+fmtBR(d.vR2)+' = <strong>'+fmtBR(d.vR1+d.vR2)+' V</strong> (deve ser ≈ '+fmtBR(d.v)+' V ✓)</li>'
+    +'</ol></div>';
+}
+
+function updateTensao() {
+  renderSVGSerie();
+  renderTensaoResults();
+  if (stepsVisivelTensao) renderStepsTensao();
+}
+['vt-v','vt-r1','vt-r2'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', updateTensao);
+});
+
+/* ====== DIVISOR DE CORRENTE ====== */
+function getCorrenteValues() {
+  var iT = parseFloat(document.getElementById('dc-it').value) || 0;
+  var r1 = Math.max(0, parseFloat(document.getElementById('dc-r1').value) || 0);
+  var r2 = Math.max(0, parseFloat(document.getElementById('dc-r2').value) || 0);
+  var rSum = r1 + r2;
+  var i1 = rSum > 0 ? iT * (r2 / rSum) : 0;
+  var i2 = rSum > 0 ? iT * (r1 / rSum) : 0;
+  var rPar = rSum > 0 ? (r1 * r2) / rSum : 0;
+  var vT = rPar * iT;
+  return { iT:iT, r1:r1, r2:r2, rSum:rSum, i1:i1, i2:i2, rPar:rPar, vT:vT };
+}
+
+function renderSVGParalelo() {
+  var d = getCorrenteValues();
+  var absIT = Math.abs(d.iT) || 1;
+  var svg = document.getElementById('svg-paralelo');
+  svg.innerHTML =
+    '<defs>'
+    +'<marker id="arrowR" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="0"><path d="M0,0 L8,3 L0,6" fill="var(--teal)"/></marker>'
+    +'<marker id="arrowDnI1" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1 L 10 5 L 0 9 Z" fill="var(--ca)"/></marker>'
+    +'<marker id="arrowDnI2" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1 L 10 5 L 0 9 Z" fill="var(--cb-txt)"/></marker>'
+    +'</defs>'
+    +'<line x1="80" y1="35" x2="350" y2="35" stroke="var(--tinta)" stroke-width="2.5"/>'
+    +'<line x1="80" y1="195" x2="350" y2="195" stroke="var(--tinta)" stroke-width="2.5"/>'
+    +'<line x1="80" y1="35" x2="80" y2="85" stroke="var(--tinta)" stroke-width="2.5"/>'
+    +'<line x1="80" y1="145" x2="80" y2="195" stroke="var(--tinta)" stroke-width="2.5"/>'
+    +'<circle cx="80" cy="115" r="30" fill="#fff" stroke="var(--tinta)" stroke-width="2.5"/>'
+    +'<text x="80" y="105" text-anchor="middle" font-size="16" font-weight="800" fill="var(--tinta)">+</text>'
+    +'<text x="80" y="132" text-anchor="middle" font-size="20" font-weight="800" fill="var(--tinta)">−</text>'
+    +'<line x1="100" y1="22" x2="165" y2="22" stroke="var(--teal)" stroke-width="2.5" marker-end="url(#arrowR)"/>'
+    +'<text x="185" y="27" font-size="15" font-weight="800" fill="var(--teal)">I<tspan font-size="10" dy="3">T</tspan></text>'
+    +'<circle cx="220" cy="35" r="4" fill="var(--tinta)"/>'
+    +'<circle cx="220" cy="195" r="4" fill="var(--tinta)"/>'
+    +'<line x1="220" y1="35" x2="220" y2="90" stroke="var(--tinta)" stroke-width="2.5"/>'
+    +'<rect x="200" y="90" width="35" height="65" rx="3" fill="none" stroke="var(--ca)" stroke-width="2.5"/>'
+    +'<text x="220" y="110" text-anchor="middle" font-size="13" font-weight="800" fill="var(--ca-txt)">R₁</text>'
+    +'<line x1="220" y1="155" x2="220" y2="195" stroke="var(--tinta)" stroke-width="2.5"/>'
+    +'<text x="248" y="108" font-size="11" font-weight="700" fill="var(--ca-txt)">'+fmtR(d.r1)+'</text>'
+    +'<line x1="230" y1="42" x2="230" y2="82" stroke="var(--ca)" stroke-width="2.0" marker-end="url(#arrowDnI1)"/>'
+    +'<text x="240" y="60" font-size="15" font-weight="800" fill="var(--ca-txt)">I₁</text>'
+    +'<line x1="350" y1="35" x2="350" y2="90" stroke="var(--tinta)" stroke-width="2.5"/>'
+    +'<rect x="330" y="90" width="35" height="65" rx="3" fill="none" stroke="var(--cb-txt)" stroke-width="2.5"/>'
+    +'<text x="350" y="110" text-anchor="middle" font-size="13" font-weight="800" fill="var(--cb-txt)">R₂</text>'
+    +'<line x1="350" y1="155" x2="350" y2="195" stroke="var(--tinta)" stroke-width="2.5"/>'
+    +'<text x="378" y="108" font-size="11" font-weight="700" fill="var(--cb-txt)">'+fmtR(d.r2)+'</text>'
+    +'<line x1="360" y1="42" x2="360" y2="82" stroke="var(--cb-txt)" stroke-width="2.0" marker-end="url(#arrowDnI2)"/>'
+    +'<text x="370" y="60" font-size="15" font-weight="800" fill="var(--cb-txt)">I₂</text>';
+
+  var sizeI1 = 0.75 + (Math.abs(d.i1)/absIT)*1.25;
+  var sizeI2 = 0.75 + (Math.abs(d.i2)/absIT)*1.25;
+  var pctI1 = Math.min(100,(Math.abs(d.i1)/absIT)*100);
+  var pctI2 = Math.min(100,(Math.abs(d.i2)/absIT)*100);
+  document.getElementById('corrente-bars').innerHTML =
+    '<div style="border-radius:12px;padding:.75rem 1rem;background:#fff;border:3px solid var(--ca);text-align:center">'
+    +'<div style="font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-2);margin-bottom:.4rem">Corrente em R1</div>'
+    +'<div style="font-family:var(--mono);font-weight:800;font-size:'+sizeI1+'rem;color:var(--ca-txt);transition:font-size .3s">'+fmtBR(d.i1)+' mA</div>'
+    +'<div style="height:8px;border-radius:999px;background:#eae5da;margin-top:.5rem;overflow:hidden"><div style="height:100%;width:'+pctI1+'%;background:var(--ca);border-radius:999px;transition:width .3s"></div></div>'
+    +'</div>'
+    +'<div style="border-radius:12px;padding:.75rem 1rem;background:#fff;border:3px dashed var(--cb-txt);text-align:center">'
+    +'<div style="font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-2);margin-bottom:.4rem">Corrente em R2</div>'
+    +'<div style="font-family:var(--mono);font-weight:800;font-size:'+sizeI2+'rem;color:var(--cb-txt);transition:font-size .3s">'+fmtBR(d.i2)+' mA</div>'
+    +'<div style="height:8px;border-radius:999px;background:#eae5da;margin-top:.5rem;overflow:hidden"><div style="height:100%;width:'+pctI2+'%;background:var(--cb);border-radius:999px;transition:width .3s"></div></div>'
+    +'</div>';
+}
+
+function renderCorrenteResults() {
+  var d = getCorrenteValues();
+  document.getElementById('corrente-results').innerHTML =
+    '<div class="resultado-ex">I<sub>1</sub> = '+fmtBR(d.i1)+' mA</div>'
+    +'<div class="resultado-ex" style="background:var(--erro-bg);border-color:var(--cb-txt);color:var(--cb-txt)">I<sub>2</sub> = '+fmtBR(d.i2)+' mA</div>';
+}
+
+var stepsVisivelCorrente = false;
+document.getElementById('btn-steps-corrente').addEventListener('click', function() {
+  stepsVisivelCorrente = !stepsVisivelCorrente;
+  var el = document.getElementById('steps-corrente');
+  el.style.display = stepsVisivelCorrente ? 'block' : 'none';
+  this.textContent = stepsVisivelCorrente ? 'Ocultar Passo a Passo' : 'Ver Passo a Passo';
+  if (stepsVisivelCorrente) renderStepsCorrente();
+});
+
+function renderStepsCorrente() {
+  var d = getCorrenteValues();
+  document.getElementById('steps-corrente').innerHTML =
+    '<div class="exemplo" style="margin-top:.75rem;animation:surgir .22s ease both">'
+    +'<div class="head">Passo a Passo do Cálculo</div>'
+    +'<ol class="passos">'
+    +'<li><strong>Resistência equivalente (paralelo):</strong> R<sub>EQ</sub> = (R1 × R2) / (R1 + R2) = ('+fmtBR(d.r1)+' × '+fmtBR(d.r2)+') / ('+fmtBR(d.r1)+' + '+fmtBR(d.r2)+') = <strong>'+fmtBR(d.rPar)+' kΩ</strong></li>'
+    +'<li><strong>Tensão nos ramos (mesma em paralelo):</strong> V = R<sub>EQ</sub> × I<sub>T</sub> = '+fmtBR(d.rPar)+' × '+fmtBR(d.iT)+' = <strong>'+fmtBR(d.vT)+' V</strong></li>'
+    +'<li><strong>Corrente em R1 (fórmula cruzada):</strong> I<sub>1</sub> = R2 / (R1 + R2) × I<sub>T</sub> = '+fmtBR(d.r2)+' / '+fmtBR(d.rSum)+' × '+fmtBR(d.iT)+' = <strong style="color:var(--ca-txt)">'+fmtBR(d.i1)+' mA</strong></li>'
+    +'<li><strong>Corrente em R2 (fórmula cruzada):</strong> I<sub>2</sub> = R1 / (R1 + R2) × I<sub>T</sub> = '+fmtBR(d.r1)+' / '+fmtBR(d.rSum)+' × '+fmtBR(d.iT)+' = <strong style="color:var(--cb-txt)">'+fmtBR(d.i2)+' mA</strong></li>'
+    +'<li><strong>Verificação:</strong> I<sub>1</sub> + I<sub>2</sub> = '+fmtBR(d.i1)+' + '+fmtBR(d.i2)+' = <strong>'+fmtBR(d.i1+d.i2)+' mA</strong> (deve ser ≈ '+fmtBR(d.iT)+' mA ✓)</li>'
+    +'</ol></div>';
+}
+
+function updateCorrente() {
+  renderSVGParalelo();
+  renderCorrenteResults();
+  if (stepsVisivelCorrente) renderStepsCorrente();
+}
+['dc-it','dc-r1','dc-r2'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', updateCorrente);
+});
+
+/* ====== EXERCÍCIOS ====== */
+var exercicios = [
+  {id:1, enunciado:'Um circuito série tem V = 12 V, R1 = 3 kΩ e R2 = 6 kΩ. Qual é a tensão sobre R2?', opcoes:['4 V','6 V','8 V','12 V'], correta:2,
+   explicacao:'V<sub>R2</sub> = R2/(R1+R2) × V = 6/(3+6) × 12 = 6/9 × 12 = 8 V. Como R2 é o maior resistor, ele fica com a maior tensão.',
+   explicacaoErro:'Lembre-se: no divisor de tensão, V<sub>R2</sub> = R2/(R1+R2) × V. A tensão é proporcional à resistência: o resistor MAIOR tem a MAIOR tensão.'},
+  {id:2, enunciado:'No mesmo circuito (V = 12 V, R1 = 3 kΩ, R2 = 6 kΩ), a corrente em R1 é:', opcoes:['1,33 mA','2 mA','4 mA','6 mA'], correta:0,
+   explicacao:'I = V/R<sub>T</sub> = 12/9 ≈ 1,33 mA. Em série, a corrente é IGUAL em R1 e R2!',
+   explicacaoErro:'Em circuito série, a corrente é a mesma em todos os componentes. Calcule: I = V / (R1 + R2) = 12 / (3+6) = 12/9 ≈ 1,33 mA.'},
+  {id:3, enunciado:'Em um circuito paralelo com I<sub>T</sub> = 10 mA, R1 = 2 kΩ e R2 = 8 kΩ, qual é a corrente em R1?', opcoes:['2 mA','5 mA','8 mA','10 mA'], correta:2,
+   explicacao:'I<sub>1</sub> = R2/(R1+R2) × I<sub>T</sub> = 8/(2+8) × 10 = 0,8 × 10 = 8 mA. Como R1 é MENOR, ele recebe MAIS corrente (fórmula cruzada).',
+   explicacaoErro:'No divisor de corrente a fórmula é "cruzada": I<sub>1</sub> = R2/(R1+R2) × I<sub>T</sub>. O ramo de MENOR resistência recebe MAIS corrente.'},
+  {id:4, enunciado:'Dois resistores iguais (R1 = R2 = 5 kΩ) estão em série com V = 20 V. A tensão sobre cada resistor é:', opcoes:['5 V','10 V','15 V','20 V'], correta:1,
+   explicacao:'Quando R1 = R2, a tensão se divide igualmente: V<sub>R1</sub> = V<sub>R2</sub> = 20/2 = 10 V.',
+   explicacaoErro:'Quando os resistores são iguais em série, a tensão se divide igualmente: V/2 para cada um.'},
+  {id:5, enunciado:'Em um divisor de corrente com I<sub>T</sub> = 6 mA, R1 = 4 kΩ e R2 = 12 kΩ, qual é a corrente em R2?', opcoes:['1,5 mA','3 mA','4,5 mA','6 mA'], correta:0,
+   explicacao:'I<sub>2</sub> = R1/(R1+R2) × I<sub>T</sub> = 4/(4+12) × 6 = 4/16 × 6 = 1,5 mA. R2 é maior, então recebe MENOS corrente.',
+   explicacaoErro:'No divisor de corrente, I<sub>2</sub> = R1/(R1+R2) × I<sub>T</sub>. Cuidado: a fórmula é cruzada! O ramo de maior resistência recebe MENOS corrente.'}
+];
+var respostas = {};
+
+function renderExercicios() {
+  var container = document.getElementById('exercicios-container');
+  var totalResp = 0, totalCerto = 0;
+  exercicios.forEach(function(ex) {
+    if (respostas[ex.id] !== undefined) totalResp++;
+    if (respostas[ex.id] === ex.correta) totalCerto++;
+  });
+  var score = document.getElementById('ex-score');
+  if (totalResp > 0) {
+    score.style.display = 'flex'; score.style.alignItems = 'center'; score.style.gap = '1rem'; score.style.flexWrap = 'wrap';
+    score.innerHTML = '<p style="margin:0;font-weight:600;color:var(--tinta-2)">Acertos: <strong style="font-family:var(--mono);color:var(--tinta)">'+totalCerto+'/'+totalResp+'</strong></p>'
+      +'<button class="btn-sec" style="font-size:.85rem;display:flex;align-items:center;gap:.35rem" onclick="resetExercicios()">↺ Recomeçar</button>';
+  } else { score.style.display = 'none'; }
+
+  var html = '';
+  exercicios.forEach(function(ex) {
+    var respondido = respostas[ex.id] !== undefined;
+    var respostaUser = respostas[ex.id];
+    var acertou = respostaUser === ex.correta;
+    html += '<div class="cartao" style="animation:surgir .22s ease both">';
+    html += '<p style="font-size:1.05rem;font-weight:700;line-height:1.5;margin-bottom:.6rem"><strong style="color:var(--ca-txt)">Questão '+ex.id+':</strong> '+ex.enunciado+'</p>';
+    html += '<div style="display:grid;gap:.55rem">';
+    ex.opcoes.forEach(function(opc, idx) {
+      var isCorreta = idx === ex.correta;
+      var isEscolhida = respostaUser === idx;
+      var bg='#fff', brd='var(--borda)', brdStyle='solid', opa='1';
+      var lBg='var(--yel)', lCol='var(--tinta)';
+      if (respondido) {
+        if (isCorreta) { bg='var(--ok-bg)'; brd='var(--ca)'; lBg='var(--ca)'; lCol='#fff'; }
+        else if (isEscolhida) { bg='var(--erro-bg)'; brd='var(--verm)'; brdStyle='dashed'; lBg='var(--verm)'; lCol='#fff'; }
+        else { opa='0.5'; }
+      }
+      html += '<button class="opc-btn" '+(respondido?'disabled':'')+' style="background:'+bg+';border-color:'+brd+';border-style:'+brdStyle+';opacity:'+opa+'" onclick="responder('+ex.id+','+idx+')">';
+      html += '<span class="opc-letra" style="background:'+lBg+';color:'+lCol+'">'+String.fromCharCode(65+idx)+'</span>';
+      html += '<span class="opc-txt">'+opc+'</span></button>';
+    });
+    html += '</div>';
+    if (respondido) {
+      html += '<div style="margin-top:1rem;animation:surgir .25s ease">';
+      if (acertou) {
+        html += '<div class="fb fb-ok"><div class="fb-icone">✓</div><div><strong>Correto!</strong> '+ex.explicacao+'</div></div>';
+      } else {
+        html += '<div class="fb fb-erro"><div class="fb-icone" style="border-radius:5px">✗</div><div><strong>Incorreto.</strong> '+ex.explicacaoErro
+          +'<br><span style="font-size:.9rem;color:var(--tinta-2)"><strong>Resposta correta:</strong> '+ex.opcoes[ex.correta]+'</span>'
+          +'<br><span style="font-size:.88rem;color:var(--tinta-2)"><strong>Resolução:</strong> '+ex.explicacao+'</span></div></div>';
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
+function responder(exId, opcIdx) { respostas[exId] = opcIdx; renderExercicios(); }
+function resetExercicios() { respostas = {}; renderExercicios(); }
+
+/* ====== INICIALIZAÇÃO ====== */
+updateTensao();
+updateCorrente();
+renderExercicios();
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"f0f03d0605bf45f1a3b17cf7d5e6861f","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
