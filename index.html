@@ -60,7 +60,7 @@ main { padding:.75rem; }
 .fb-icone { flex:none; display:grid; place-items:center; width:2rem; height:2rem; border-radius:50%; font-size:1.2rem; color:#fff; }
 .fb-ok .fb-icone { background:var(--ca); }
 .fb-erro .fb-icone { background:var(--verm); border-radius:5px; }
-.campo label { display:block; font-size:.72rem; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:var(--tinta-2); margin-bottom:.35rem; }
+.campo label { display:block; font-size:.72rem; font-weight:800; letter-spacing:.07em; color:var(--tinta-2); margin-bottom:.35rem; }
 .campo input { width:100%; font:inherit; min-height:48px; padding:.6rem .7rem; border-radius:10px; border:2px solid var(--borda); background:#fff; color:var(--tinta); font-family:var(--mono); font-size:1.05rem; }
 .campo input:focus { outline:4px solid var(--tinta); outline-offset:2px; }
 .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; }
@@ -257,7 +257,7 @@ function renderSVGSerie() {
     +'<circle cx="70" cy="127" r="43" fill="#fff" stroke="var(--tinta)" stroke-width="2.5"/>'
     +'<text x="70" y="112" text-anchor="middle" font-size="18" font-weight="800" fill="var(--tinta)">+</text>'
     +'<text x="70" y="152" text-anchor="middle" font-size="22" font-weight="800" fill="var(--tinta)">−</text>'
-    +'<text x="14" y="130" text-anchor="end" font-size="15" font-weight="800" fill="var(--ca-txt)">'+fmtBR(d.v,1)+' V</text>'
+    +'<text x="14" y="130" text-anchor="end" font-size="15" font-weight="800" fill="var(--cr-txt)">'+fmtBR(d.v,1)+' V</text>'
     +'<rect x="160" y="35" width="110" height="30" rx="3" fill="none" stroke="var(--ca)" stroke-width="2.5"/>'
     +'<text x="210" y="28" text-anchor="middle" font-size="15" font-weight="800" fill="var(--ca-txt)">+ V<tspan font-size="10" dy="3">R1</tspan><tspan font-size="15" dy="-3">&nbsp−</tspan></text>'
     +'<text x="210" y="55" text-anchor="middle" font-size="13" font-weight="800" fill="var(--ca-txt)">R1 = '+fmtR(d.r1)+'</text>'
@@ -357,6 +357,7 @@ function renderSVGParalelo() {
     +'<text x="80" y="132" text-anchor="middle" font-size="20" font-weight="800" fill="var(--tinta)">−</text>'
     +'<line x1="100" y1="22" x2="165" y2="22" stroke="var(--teal)" stroke-width="2.5" marker-end="url(#arrowR)"/>'
     +'<text x="185" y="27" font-size="15" font-weight="800" fill="var(--teal)">I<tspan font-size="10" dy="3">T</tspan></text>'
+    +'<text x="105" y="58" font-size="15" font-weight="800" fill="var(--teal)">'+fmtBR(d.iT)+ 'mA</text>'
     +'<circle cx="220" cy="35" r="4" fill="var(--tinta)"/>'
     +'<circle cx="220" cy="195" r="4" fill="var(--tinta)"/>'
     +'<line x1="220" y1="35" x2="220" y2="90" stroke="var(--tinta)" stroke-width="2.5"/>'
